@@ -172,6 +172,57 @@ cp -R frontend/dist/ web/html/
 go build -o sui main.go
 ```
 
+### - Linux amd64 构建（Debian/Ubuntu）
+`build.sh` 默认构建 DMIT Debian/Ubuntu 可运行的 Linux amd64 产物：
+
+```shell
+./build.sh
+```
+
+默认输出：
+
+- `dist/sui`：Linux amd64 的 s-ui 二进制。
+- `dist/libcronet.so`：启用 `with_naive_outbound` 时 Naive outbound 运行所需的 Cronet 动态库。
+
+可选参数：
+
+```shell
+TARGET_OS=linux TARGET_ARCH=amd64 OUTPUT=dist/sui ./build.sh
+```
+
+构建后建议检查产物：
+
+```shell
+file dist/sui
+ldd dist/sui
+sha256sum dist/sui
+```
+
+如果使用默认 `with_naive_outbound` 构建，请把 `dist/libcronet.so` 与 `dist/sui` 放在同一目录运行，或把 `libcronet.so` 安装到系统动态库搜索路径并执行 `ldconfig`。例如：
+
+```shell
+install -m 755 dist/sui /usr/local/s-ui/sui
+install -m 755 dist/libcronet.so /usr/local/s-ui/libcronet.so
+cd /usr/local/s-ui
+./sui
+```
+
+如果不需要 Naive outbound，可禁用该 tag 并跳过 Cronet 下载：
+
+```shell
+BUILD_TAGS="with_quic,with_grpc,with_utls,with_acme,with_gvisor,badlinkname,tfogo_checklinkname0,with_tailscale" DOWNLOAD_CRONET=0 ./build.sh
+```
+
+Linux 二进制和 `libcronet.so` 属于发布产物，建议上传为 GitHub Release asset，不要直接提交进 git 仓库。
+
+低内存 Linux amd64 构建可使用限制并发脚本：
+
+```shell
+export GOMAXPROCS=2
+export GOFLAGS="-p=2"
+nice -n 10 ionice -c2 -n7 bash scripts/build-linux-limited.sh 2>&1 | tee /tmp/s-ui-build.log
+```
+
 运行后端（在仓库根目录执行）：
 ```shell
 ./sui

@@ -10,6 +10,8 @@ main
 tmp
 .sync*
 *.tar.gz
+*.so
+libcronet.so
 
 # local env files
 .env.local
