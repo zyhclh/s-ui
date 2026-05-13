@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -45,6 +46,8 @@ func (s *ServerService) GetStatus(request string) *map[string]interface{} {
 			status["sys"] = s.GetSystemInfo()
 		case "sbd":
 			status["sbd"] = s.GetSingboxInfo()
+		case "core":
+			status["core"] = s.GetCoreInfo()
 		case "db":
 			status["db"] = s.GetDatabaseInfo()
 		}
@@ -150,6 +153,66 @@ func (s *ServerService) GetSingboxInfo() map[string]interface{} {
 			"Uptime":       uptime,
 		},
 	}
+}
+
+func (s *ServerService) GetCoreInfo() map[string]interface{} {
+	modules := make([]map[string]string, 0)
+	deps := make(map[string]string, 0)
+	info, ok := debug.ReadBuildInfo()
+	if ok {
+		coreModules := map[string]string{
+			"github.com/sagernet/sing-box":         "sing-box",
+			"github.com/sagernet/sing":             "sing",
+			"github.com/sagernet/sing-tun":         "sing-tun",
+			"github.com/sagernet/sing-quic":        "sing-quic",
+			"github.com/sagernet/sing-shadowsocks": "sing-shadowsocks",
+			"github.com/sagernet/sing-vmess":       "sing-vmess",
+			"github.com/sagernet/wireguard-go":     "wireguard-go",
+			"github.com/sagernet/gvisor":           "gvisor",
+			"github.com/sagernet/quic-go":          "quic-go",
+			"github.com/sagernet/tailscale":        "tailscale",
+		}
+		coreOrder := []string{
+			"github.com/sagernet/sing",
+			"github.com/sagernet/sing-tun",
+			"github.com/sagernet/sing-quic",
+			"github.com/sagernet/sing-shadowsocks",
+			"github.com/sagernet/sing-vmess",
+			"github.com/sagernet/wireguard-go",
+			"github.com/sagernet/gvisor",
+			"github.com/sagernet/quic-go",
+			"github.com/sagernet/tailscale",
+		}
+
+		for _, dep := range info.Deps {
+			deps[dep.Path] = moduleVersion(dep)
+		}
+		for _, path := range coreOrder {
+			if version, exists := deps[path]; exists {
+				modules = append(modules, map[string]string{
+					"name":    coreModules[path],
+					"path":    path,
+					"version": version,
+				})
+			}
+		}
+	}
+	if deps["github.com/sagernet/sing-box"] == "" {
+		deps["github.com/sagernet/sing-box"] = "-"
+	}
+
+	return map[string]interface{}{
+		"singBox": deps["github.com/sagernet/sing-box"],
+		"go":      runtime.Version(),
+		"modules": modules,
+	}
+}
+
+func moduleVersion(module *debug.Module) string {
+	if module.Replace != nil {
+		return module.Replace.Version
+	}
+	return module.Version
 }
 
 func (s *ServerService) GetSystemInfo() map[string]interface{} {

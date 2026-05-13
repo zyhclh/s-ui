@@ -9,10 +9,10 @@ const props = defineProps({
 
 const data = computed(() => {
   const d = props.tilesData
-  if (!d.mem && !d.cpu) return { percent: 0, text: '-' }
+  if (!d) return { percent: 0, text: '-' }
   switch (props.type) {
     case 'g-cpu':
-      return { percent: d.cpu, text: Math.ceil(d.cpu) + "%" }
+      return { percent: d.cpu ?? 0, text: Math.ceil(d.cpu ?? 0) + "%" }
     case 'g-mem':
       return gaugeData(d.mem)
     case 'g-dsk':
@@ -24,18 +24,26 @@ const data = computed(() => {
 })
 
 const gaugeData = (d:any) :any => {
-  if (!d) return { percent: 0, text: '-' }
-  const curr = HumanReadable.sizeFormat(d.current,0).split(' ')
+  if (!d || !d.total || d.total <= 0) return { percent: 0, text: '-' }
+  const curr = sizeFormat(d.current ?? 0, d.total)
   const total = HumanReadable.sizeFormat(d.total,0).split(' ')
   if (curr[1] == total[1]) curr[1] = ''
   return {
-    percent: Math.ceil(d.current*100/d.total),
+    percent: Math.min(Math.ceil((d.current ?? 0)*100/d.total), 100),
     text: curr[0] + "<sup>" + (curr[1]?? ' ') + "</sup>/" +  total[0] + "<sup>" + (total[1]?? '') + "</sup>"
   }
 }
 
+const sizeFormat = (current:number, total:number) :string[] => {
+  if (current > 0) return HumanReadable.sizeFormat(current, 0).split(' ')
+
+  const totalFormat = HumanReadable.sizeFormat(total, 0).split(' ')
+  return ['0', totalFormat[1] ?? '']
+}
+
 const cssTransformRotateValue = computed(() => {
-  const percentageAsFraction = data.value.percent / 100
+  const percentage = Math.max(Math.min(data.value.percent, 100), 0)
+  const percentageAsFraction = percentage / 100
   const halfPercentage = percentageAsFraction / 2
 
   return `${halfPercentage}turn`
@@ -67,6 +75,7 @@ const gaugeColor = computed(() => {
 .gauge__outer {
   width: 100%;
   max-width: 250px;
+  container-type: inline-size;
 }
 
 .gauge__inner {
@@ -110,10 +119,19 @@ const gaugeColor = computed(() => {
   box-sizing: border-box;
   font-family: 'Lexend', sans-serif;
   font-weight: bold;
-  font-size: 32px;
+  font-size: clamp(18px, 12cqi, 32px);
+  line-height: 1;
 }
 
-sup {
-  font-size: 16px;
+.gauge__cover span {
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+:deep(sup) {
+  font-size: 0.5em;
 }
 </style>

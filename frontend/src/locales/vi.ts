@@ -72,6 +72,7 @@ export default {
     info: {
       sys: "Thông tin hệ thống",
       sbd: "Thông tin Sing-Box",
+      coreVersion: "Phiên bản lõi",
       host: "Máy chủ",
       cpu: "CPU",
       core: "Nhân",
@@ -79,7 +80,9 @@ export default {
       startupTime: "Thời gian khởi động",
       threads: "Luồng",
       memory: "Bộ nhớ",
-      running: "Đang chạy"
+      running: "Đang chạy",
+      singBoxCore: "Sing-Box",
+      goRuntime: "Go",
     },
     backup: {
       title: "Sao lưu và khôi phục",

@@ -72,6 +72,7 @@ export default {
     info: {
       sys: "داده‌های سیستم",
       sbd: "داده‌های سینگ‌باکس",
+      coreVersion: "نسخه‌های هسته",
       host: "نام",
       cpu: "پردازنده",
       core: "هسته",
@@ -79,7 +80,9 @@ export default {
       startupTime: "زمان راه‌اندازی",
       threads: "نخ‌ها",
       memory: "حافظه",
-      running: "اجرا"
+      running: "اجرا",
+      singBoxCore: "Sing-Box",
+      goRuntime: "Go",
     },
     backup: {
       title: "پشتیبان‌گیری و بازیابی",

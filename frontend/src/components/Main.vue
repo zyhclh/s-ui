@@ -180,6 +180,32 @@
                   </v-col>
                 </v-row>
               </template>
+              <template v-if="i == 'i-core'">
+                <v-row class="core-info" density="compact">
+                  <v-col cols="5">{{ $t('main.info.singBoxCore') }}</v-col>
+                  <v-col cols="7">
+                    <v-chip density="compact" color="primary" variant="flat">
+                      {{ tilesData.core?.singBox ?? '-' }}
+                    </v-chip>
+                  </v-col>
+                  <v-col cols="5">{{ $t('main.info.goRuntime') }}</v-col>
+                  <v-col cols="7">
+                    <v-chip density="compact" color="info" variant="flat">
+                      {{ tilesData.core?.go ?? '-' }}
+                    </v-chip>
+                  </v-col>
+                  <v-col cols="12" class="core-info__modules">
+                    <v-table density="compact">
+                      <tbody>
+                        <tr v-for="module in tilesData.core?.modules ?? []" :key="module.path">
+                          <td>{{ module.name }}</td>
+                          <td class="text-end" dir="ltr">{{ module.version }}</td>
+                        </tr>
+                      </tbody>
+                    </v-table>
+                  </v-col>
+                </v-row>
+              </template>
             </v-card-text>
           </v-card>
         </v-col>
@@ -221,6 +247,7 @@ const menuItems = [
   { title: i18n.global.t('main.infos'), value: [
     { title: i18n.global.t('main.info.sys'), value: "i-sys" },
     { title: i18n.global.t('main.info.sbd'), value: "i-sbd" },
+    { title: i18n.global.t('main.info.coreVersion'), value: "i-core" },
     ]
   },
 ]
@@ -293,3 +320,27 @@ const restartSingbox = async () => {
   loading.value = false
 }
 </script>
+
+<style scoped>
+.core-info {
+  text-align: start;
+}
+
+.core-info__modules {
+  max-height: 96px;
+  overflow-y: auto;
+  padding-top: 0;
+}
+
+.core-info__modules :deep(.v-table__wrapper) {
+  overflow: visible;
+}
+
+.core-info__modules td {
+  border-bottom: 0;
+  font-size: 0.8rem;
+  height: 24px;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+</style>

@@ -72,6 +72,7 @@ export default {
     info: {
       sys: "系统信息",
       sbd: "运行信息",
+      coreVersion: "内核版本",
       host: "主机",
       cpu: "CPU",
       core: "核心",
@@ -79,7 +80,9 @@ export default {
       startupTime: "启动时间",
       threads: "线程",
       memory: "内存",
-      running: "运行状态"
+      running: "运行状态",
+      singBoxCore: "Sing-Box",
+      goRuntime: "Go",
     },
     backup: {
       title: "备份与恢复",

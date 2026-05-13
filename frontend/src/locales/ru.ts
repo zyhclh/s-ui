@@ -72,6 +72,7 @@ export default {
     info: {
       sys: "Информация о системе",
       sbd: "Информация о Sing-Box",
+      coreVersion: "Версии ядра",
       host: "Хост",
       cpu: "ЦП",
       core: "Ядро",
@@ -79,7 +80,9 @@ export default {
       startupTime: "Время запуска",
       threads: "Потоки",
       memory: "Память",
-      running: "Работает"
+      running: "Работает",
+      singBoxCore: "Sing-Box",
+      goRuntime: "Go",
     },
     backup: {
       title: "Резервное копирование и восстановление",
