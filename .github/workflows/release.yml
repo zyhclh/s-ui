@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 检出仓库
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
         with:
           submodules: recursive
           fetch-depth: 1
@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 检出仓库
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
 
       - name: 下载前端构建产物
         uses: actions/download-artifact@v8
